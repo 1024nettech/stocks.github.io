@@ -33,16 +33,15 @@
    style="
       display:inline-block;
       padding:12px 24px;
-      background-color:#1A73E8;
+      background-color:#325CEA;
       color:white;
       border-radius:8px;
       text-decoration:none;
       font-weight:600;
       font-size:16px;
       text-align:center;
-      width:180px;
+      width:200px;
       height:50px;
-      line-height:50px;
    ">
 📥 下载最新数据
 </a>
