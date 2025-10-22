@@ -28,7 +28,7 @@
 
 ## 🧩 文件结构
 
-<a href="下载最新数据"
+<a href="https://1024nettech.github.io/stocks.github.io/stocks_data.xlsx"
    download
    style="
       display:inline-block;
@@ -44,5 +44,5 @@
       height:50px;
       line-height:50px;
    ">
-📥 下载 Excel 文件
+📥 下载最新数据
 </a>
