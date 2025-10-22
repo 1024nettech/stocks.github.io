@@ -1,17 +1,22 @@
 name: Auto Update Stocks Data
 
+permissions:
+  contents: write # ✅ 允许写入仓库内容
+
 on:
   schedule:
-    # 北京时间 11:30 -> UTC+8, 所以 UTC 时间为 03:30
     # - cron: "30 3 * * 1,4"
     - cron: "30 5 * * 3,4"
-  workflow_dispatch: # 手动触发
+  workflow_dispatch:
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # ✅ 使用内置令牌，有写入权限
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -30,5 +35,5 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add stocks_data.xlsx
-          git commit -m "Auto update stocks_data.xlsx [$(date '+%Y-%m-%d %H:%M:%S')]"
+          git commit -m "Auto update stocks_data.xlsx [$(date '+%Y-%m-%d %H:%M:%S')]" || echo "No changes to commit"
           git push
