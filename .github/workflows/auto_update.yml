@@ -1,0 +1,34 @@
+name: Auto Update Stocks Data
+
+on:
+  schedule:
+    # 北京时间 11:30 -> UTC+8, 所以 UTC 时间为 03:30
+    # - cron: "30 3 * * 1,4"
+    - cron: "30 5 * * 3,4"
+  workflow_dispatch: # 手动触发
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install requests openpyxl
+
+      - name: Run update script
+        run: python main.py
+
+      - name: Commit and push results
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add stocks_data.xlsx
+          git commit -m "Auto update stocks_data.xlsx [$(date '+%Y-%m-%d %H:%M:%S')]"
+          git push
