@@ -6,7 +6,7 @@ permissions:
 on:
   schedule:
     # - cron: "30 3 * * 1,4"
-    - cron: "45 5 * * 3,4"
+    - cron: "20 6 * * 3,4"
   workflow_dispatch:
 
 jobs:
@@ -30,10 +30,25 @@ jobs:
       - name: Run update script
         run: python main.py
 
-      - name: Commit and push results
+      - name: Commit and push updated stocks_data.xlsx
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git add stocks_data.xlsx
           git commit -m "Auto update stocks_data.xlsx [$(date '+%Y-%m-%d %H:%M:%S')]" || echo "No changes to commit"
+          git push
+
+      - name: Update README with last update time
+        run: |
+          # 获取当前北京时间并格式化
+          current_time=$(TZ="Asia/Shanghai" date '+%Y-%m-%d %H:%M:%S')
+
+          # 更新 README.md 中的最后更新时间
+          sed -i "s|最后更新时间：[^\n]*|最后更新时间：${current_time} (北京时间)|" README.md
+
+          # 提交并推送更新的 README.md 文件
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add README.md
+          git commit -m "Update README with last update time: ${current_time}" || echo "No changes to commit"
           git push
