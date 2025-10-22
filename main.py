@@ -738,16 +738,38 @@ def fetch_stock_data_to_ws(ws, target_col):
         try:
             response = session.get(url, headers=headers, timeout=10)
             response.raise_for_status()
-            parts = response.text.split("~")
-            parsed = parts[3] if len(parts) > 3 and parts[3] else parts[0]
-            val = safe_float_convert(parsed)
-            data["result"] = val
+
+            # 解析数据
+            if "qt.gtimg.cn" in url:
+                # qt.gtimg.cn 的响应以 ~ 分隔，价格一般在第 4 个位置（索引 3）
+                parts = response.text.split("~")
+                if len(parts) > 3 and parts[3] != '':
+                    parsed = parts[3]
+                else:
+                    parsed = parts[0]
+                data["result"] = parsed
+            elif "xueqiu.com" in url:
+                # 解析 xueqiu.com 的 JSON 响应
+                json_data = response.json()
+                data["result"] = json_data["data"][0]["current"]  # 提取 current 值
+            elif "sinajs.cn" in url:
+                # 解析 sina 的响应；保守匹配浮点数
+                match = re.search(r'([0-9]+\.[0-9]+)', response.text)
+                if match:
+                    data["result"] = match.group(1)
+
+            print(f"{name}: {data.get('result')}")
             if data["row"] == 4:
+                # 写入日期和标题
                 ws.cell(row=1, column=target_col, value=datetime.now().strftime("%Y/%m/%d"))
                 ws.cell(row=2, column=target_col, value="上证")
-            write_number_cell(ws, data["row"], target_col, val)
-        except:
-            pass
+            # 尝试写入浮点并限制两位小数
+            val = data.get("result", "")
+            numeric_val = safe_float_convert(val)
+            write_number_cell(ws, data["row"], target_col, numeric_val)
+        except Exception as e:
+            print(f"请求 {name} 数据失败: {e}")
+        # 轻微等待，避免请求过快
         time.sleep(1)
 
 # --------------------------
@@ -799,35 +821,59 @@ def split_md5(md5_string, ts, gu_code):
     }
 
 def fetch_pe_pb_xilv_data(gu_code, ts):
+    """
+    发起估值接口请求，返回 pe, pb, xilv 三个数值（float）。
+    出错时返回 0,0,0。
+    """
     try:
         t = f"{ts}{gu_code}pepcnew2.2.7-1EWf45rlv#kfsr@k#gfksgkr"
         md5_value = hashlib.md5(t.encode('utf-8')).hexdigest()
-        body = json.dumps(split_md5(md5_value, ts, gu_code))
+        md5_parts = split_md5(md5_value, ts, gu_code)
+        body = json.dumps(md5_parts)
         headers2 = {
             "Host": "api.jiucaishuo.com",
             "Content-Type": "application/json;charset=UTF-8",
             "User-Agent": headers["User-Agent"],
         }
         r = requests.post("https://api.jiucaishuo.com/v2/guzhi/newtubiaodata", headers=headers2, data=body, timeout=10)
-        data = r.json()
-        pe_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[1].get('new_percent_value', {}).get('value', '0')
-        pb_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[2].get('new_percent_value', {}).get('value', '0')
-        xilv_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[3].get('new_percent_value', {}).get('value', '0')
+        if r.status_code == 200:
+            data = r.json()
+            # 取 new_percent_value 中的百分比数字并转 float
+            pe_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[1].get('new_percent_value', {}).get('value', '0')
+            pb_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[2].get('new_percent_value', {}).get('value', '0')
+            xilv_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[3].get('new_percent_value', {}).get('value', '0')
 
-        def parse_percent(s): return float(str(s).replace('%', '').strip() or 0.0)
-        return round(parse_percent(pe_str), 2), round(parse_percent(pb_str), 2), round(parse_percent(xilv_str), 2)
-    except:
-        return 0.0, 0.0, 0.0
+            def parse_percent(s):
+                try:
+                    return float(str(s).replace('%', '').strip() or 0.0)
+                except:
+                    return 0.0
+
+            pe = parse_percent(pe_str)
+            pb = parse_percent(pb_str)
+            xilv = parse_percent(xilv_str)
+            # 保留两位小数
+            pe = round(pe, 2)
+            pb = round(pb, 2)
+            xilv = round(xilv, 2)
+            return pe, pb, xilv
+    except Exception as e:
+        print(f"估值接口出错: {e}")
+    return 0.0, 0.0, 0.0
 
 def update_pe_pb_xilv_to_ws(ws, target_col):
     for name, data in pe_pb_xilv.items():
+        if data["row"] == 0:
+            continue
         pe, pb, xilv = fetch_pe_pb_xilv_data(data["code"], int(time.time() * 1000))
+        # 结果按 calc 权重计算，并保留两位小数
         try:
             result = pe * data["calc"][0] + pb * data["calc"][1] + xilv * data["calc"][2]
             result = round(float(result), 2)
-        except:
+        except Exception:
             result = 0.0
         write_number_cell(ws, data["row"], target_col, result)
+        print(f"{name} 估值结果: \n\t代码: {data['code']}\n\tpe百分位: {pe} pb百分位: {pb} 息率: {xilv}\n\t权重: {data['calc']}\n\t结果: {result}")
         time.sleep(1)
 
 # --------------------------
@@ -854,4 +900,4 @@ def export_realtime_data():
 
 if __name__ == "__main__":
     export_realtime_data()
-# End-857-2025.10.22.133706
+# End-903-2025.10.22.140534
