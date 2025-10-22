@@ -45,32 +45,656 @@ def write_number_cell(ws, row, col, value):
 stock_index_start_row = 7
 stock_val_start_row = 6
 
+# 定义字典
 stocks_index = {
-    "上证点数": {
-        "code": "000001",
-        "row": 4,
-        "result": "",
-        "url": "https://qt.gtimg.cn/?q=s_sh",
-    },
-    "中证A500": {
-        "code": "000510",
-        "row": 0,
-        "result": "",
-        "url": "https://qt.gtimg.cn/?q=s_sh",
-    },
+  "上证点数": {
+    "code": "000001",
+    "row": 4,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "中证A500": {
+    "code": "000510",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "沪深300": {
+    "code": "000300",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "中证500": {
+    "code": "000905",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "沪港深500": {
+    "code": "CSIH30455",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "标普500": {
+    "code": "usINX",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_",
+  },
+  "印度": {
+    "code": "SENSEX",
+    "row": 0,
+    "result": "",
+    "url": "https://w.sinajs.cn/list=znb_",
+  },
+  "德国": {
+    "code": "DAX_i",
+    "row": 0,
+    "result": "",
+    "url": "https://w.sinajs.cn/list=znb_",
+  },
+  "日本": {
+    "code": "NKY_i",
+    "row": 0,
+    "result": "",
+    "url": "https://w.sinajs.cn/list=znb_",
+  },
+  "中证红利": {
+    "code": "000922",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "红利质量": {
+    "code": "CSI931468",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "创业板50": {
+    "code": "399673",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "创业板指": {
+    "code": "399006",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "中证医疗": {
+    "code": "399989",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "300医药": {
+    "code": "000913",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "消费龙头": {
+    "code": "CSI931068",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "家用电器": {
+    "code": "CSI930697",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "中证白酒": {
+    "code": "399997",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "中证消费": {
+    "code": "000932",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "恒生医药": {
+    "code": "HKHSHKBIO",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "中概互联": {
+    "code": "CSIH30533",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "中证中药": {
+    "code": "CSI930641",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "恒生互联网": {
+    "code": "HKHSIII",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "恒生科技": {
+    "code": "HKHSTECH",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "全指医药": {
+    "code": "000991",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sh",
+  },
+  "保险": {
+    "code": "399809",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "中证新能源": {
+    "code": "399808",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "中证光伏": {
+    "code": "CSI931151",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "新能源车": {
+    "code": "399417",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "CS创新药": {
+    "code": "CSI931152",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "医疗器械": {
+    "code": "BK0044",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "半导体": {
+    "code": "CSIH30184",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "中证军工": {
+    "code": "399967",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "中证畜牧": {
+    "code": "CSI930707",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "证券行业": {
+    "code": "399975",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "中证有色": {
+    "code": "CSI930708",
+    "row": 0,
+    "result": "",
+    "url": "https://stock.xueqiu.com/v5/stock/realtime/quotec.json?symbol=",
+  },
+  "基建工程": {
+    "code": "399995",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  },
+  "国证地产": {
+    "code": "399393",
+    "row": 0,
+    "result": "",
+    "url": "https://qt.gtimg.cn/?q=s_sz",
+  }
 }
-
-pe_pb_xilv = {
-    "沪深全A(万德全A)": {
-        "row": 3,
-        "code": "881001.WI",
-        "calc": [0.5, 0.5, 0]
-    },
-    "中证A500": {
-        "row": 0,
-        "code": "000510.SH",
-        "calc": [0.5, 0.5, 0]
-    },
+pe_pb_xilv={
+"沪深全A(万德全A)":{
+    "row":3,
+    "code":"881001.WI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证A500":{
+    "row": 0,
+    "code":"000510.SH",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"沪深300":{
+    "row": 0,
+    "code":"000300.SH",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证500":{
+    "row": 0,
+    "code":"000905.SH",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"沪港深500":{
+    "row": 0,
+    "code":"H30455.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"标普500":{
+    "row": 0,
+    "code":"SPX.GI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"印度(印度孟买SENSEX30)":{
+    "row": 0,
+    "code":"SENSEX.BO",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"德国(德国DAX)":{
+    "row": 0,
+    "code":"GDAXI.GI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"日本(日经225)":{
+    "row": 0,
+    "code":"N225.GI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证红利":{
+    "row": 0,
+    "code":"000922.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.3,0.3,0.4]
+},
+"红利质量":{
+    "row": 0,
+    "code":"931468.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"创业板50":{
+    "row": 0,
+    "code":"399673.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"创业板指":{
+    "row": 0,
+    "code":"399006.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证医疗":{
+    "row": 0,
+    "code":"399989.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"300医药":{
+    "row": 0,
+    "code":"000913.SH",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"消费龙头":{
+    "row": 0,
+    "code":"931068.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"家用电器":{
+    "row": 0,
+    "code":"930697.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证白酒":{
+    "row": 0,
+    "code":"399997.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证消费":{
+    "row": 0,
+    "code":"000932.SH",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"恒生医药(恒生医疗保健)":{
+    "row": 0,
+    "code":"HSHCI.HI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中概互联(中国互联网50)":{
+    "row": 0,
+    "code":"H30533.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证中药":{
+    "row": 0,
+    "code":"930641.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"恒生互联网(恒生互联网科技业)":{
+    "row": 0,
+    "code":"HSIII.HI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"恒生科技(恒生科技指数)":{
+    "row": 0,
+    "code":"HSTECH.HI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"全指医药":{
+    "row": 0,
+    "code":"000991.SH",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"保险(保险II(申万))": {
+  "row": 0,
+  "code":"801194.SI",
+  "pe_new_value":0,
+  "pe_new_percent_value":0,
+  "pb_new_value":0,
+  "pb_new_percent_value":0,
+  "xilv_new_value":0,
+  "xilv_new_percent_value":0,
+  "calc":[0.5,0.5,0]
+},
+"中证新能源(中证新能)":{
+    "row": 0,
+    "code":"399808.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证光伏(光伏产业)":{
+    "row": 0,
+    "code":"931151.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"新能源车":{
+    "row": 0,
+    "code":"930997.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"CS创新药":{
+    "row": 0,
+    "code":"931152.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"医疗器械":{
+    "row": 0,
+    "code":"h30217.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"半导体(中证全指半导体)":{
+    "row": 0,
+    "code":"h30184.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.5,0.5,0]
+},
+"中证军工":{
+    "row": 0,
+    "code":"399967.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.3,0.7,0]
+},
+"中证畜牧":{
+    "row": 0,
+    "code":"930707.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.3,0.7,0]
+},
+"证券行业(证券公司)":{
+    "row": 0,
+    "code":"399975.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.3,0.7,0]
+},
+"中证有色":{
+    "row": 0,
+    "code":"930708.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.3,0.7,0]
+},
+"基建工程(中证基建工程)":{
+    "row": 0,
+    "code":"399995.SZ",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.3,0.7,0]
+},
+"国证地产(中证全指房地产)":{
+    "row": 0,
+    "code":"931775.CSI",
+    "pe_new_value":0,
+    "pe_new_percent_value":0,
+    "pb_new_value":0,
+    "pb_new_percent_value":0,
+    "xilv_new_value":0,
+    "xilv_new_percent_value":0,
+    "calc":[0.3,0.7,0]
+}
 }
 
 # 自动补充行号
@@ -140,6 +764,38 @@ def split_md5(md5_string, ts, gu_code):
         "version": "2.2.7",
         "authtoken": "",
         "act_time": ts,
+        'yi854tew': md5_string[29:31],
+        'u54rg5d': md5_string[2:4],
+        'bioduytlw': md5_string[5:6],
+        'nkjhrew': md5_string[26:27],
+        'bvytikwqjk': md5_string[6:8],
+        'tiklsktr4': md5_string[1:2],
+        'tirgkjfs': md5_string[0:2],
+        'bgd7h8tyu54': md5_string[6:8],
+        'yt447e13f': md5_string[8:9],
+        'nd354uy4752': md5_string[30:31],
+        'ghtoiutkmlg': md5_string[11:14],
+        'y654b5fs3tr': md5_string[11:12],
+        'fjlkatj': md5_string[2:5],
+        'jnhf8u5231': md5_string[9:11],
+        'sbnoywr': md5_string[23:25],
+        'kf54ge7': md5_string[31:32],
+        'hy5641d321t': md5_string[25:27],
+        'bgiuytkw': md5_string[9:11],
+        'quikgdky': md5_string[27:29],
+        'ngd4uy551': md5_string[17:19],
+        'bd4uy742': md5_string[26:27],
+        'ngd4yut78': md5_string[12:14],
+        'iogojti': md5_string[25:26],
+        'h67456y': md5_string[16:19],
+        'lksytkjh': md5_string[17:21],
+        'n3bf4uj7y7': md5_string[18:19],
+        'nbf4uj7y432': md5_string[21:23],
+        'ibvytiqjek': md5_string[14:16],
+        'h13ey474': md5_string[29:32],
+        'abiokytke': md5_string[21:23],
+        'bd24y6421f': md5_string[24:26],
+        'tbvdiuytk': md5_string[16:17],
     }
 
 def fetch_pe_pb_xilv_data(gu_code, ts):
@@ -198,4 +854,4 @@ def export_realtime_data():
 
 if __name__ == "__main__":
     export_realtime_data()
-# End-201-2025.10.22.130023
+# End-857-2025.10.22.133706
