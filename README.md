@@ -30,7 +30,7 @@
 
 最后更新时间：2025-11-03 12:04:47 (北京时间)
 
-<a href="https://1024nettech.github.io/stocks.github.io/stocks_data.xlsx"
+<a href="https://1024nettech.github.io/stocks/stocks_data.xlsx"
    download
    style="
       display:inline-block;
