@@ -896,8 +896,12 @@ def export_realtime_data():
     update_pe_pb_xilv_to_ws(ws, target_col)
     set_column_style(ws, target_col)
 
+    for col in range(1, target_col + 1):
+        col_letter = openpyxl.utils.get_column_letter(col)
+        ws.column_dimensions[col_letter].width = 20
+
     wb.save(xlsx_path)
 
 if __name__ == "__main__":
     export_realtime_data()
-# End-903-2025.10.22.140534
+# End-907-2025.11.04.090007
