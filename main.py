@@ -561,7 +561,8 @@ pe_pb_xilv={
   "pb_new_percent_value":0,
   "xilv_new_value":0,
   "xilv_new_percent_value":0,
-  "calc":[0.5,0.5,0]
+  "calc":[0.5,0.5,0],
+  "rewrite_row":79
 },
 "中证新能源(中证新能)":{
     "row": 0,
@@ -709,6 +710,7 @@ for v in pe_pb_xilv.values():
     if v["row"] == 0:
         v["row"] = row_value
         row_value += 3
+    v["rewrite_row"] = v.get("rewrite_row", 0)
 
 # --------------------------
 # 请求设置
@@ -839,6 +841,7 @@ def fetch_pe_pb_xilv_data(gu_code, ts):
         if r.status_code == 200:
             data = r.json()
             # 取 new_percent_value 中的百分比数字并转 float
+            point_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[0].get('new_value', {}).get('value', '0')
             pe_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[1].get('new_percent_value', {}).get('value', '0')
             pb_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[2].get('new_percent_value', {}).get('value', '0')
             xilv_str = data.get('data', {}).get('top_data', [None, {}, {}, {}])[3].get('new_percent_value', {}).get('value', '0')
@@ -848,24 +851,25 @@ def fetch_pe_pb_xilv_data(gu_code, ts):
                     return float(str(s).replace('%', '').strip() or 0.0)
                 except:
                     return 0.0
-
+            point = parse_percent(point_str)
             pe = parse_percent(pe_str)
             pb = parse_percent(pb_str)
             xilv = parse_percent(xilv_str)
             # 保留两位小数
+            point = round(point, 2)
             pe = round(pe, 2)
             pb = round(pb, 2)
             xilv = round(xilv, 2)
-            return pe, pb, xilv
+            return point, pe, pb, xilv
     except Exception as e:
         print(f"估值接口出错: {e}")
-    return 0.0, 0.0, 0.0
+    return 0.0, 0.0, 0.0, 0.0
 
 def update_pe_pb_xilv_to_ws(ws, target_col):
     for name, data in pe_pb_xilv.items():
         if data["row"] == 0:
             continue
-        pe, pb, xilv = fetch_pe_pb_xilv_data(data["code"], int(time.time() * 1000))
+        point, pe, pb, xilv = fetch_pe_pb_xilv_data(data["code"], int(time.time() * 1000))
         # 结果按 calc 权重计算，并保留两位小数
         try:
             result = pe * data["calc"][0] + pb * data["calc"][1] + xilv * data["calc"][2]
@@ -873,6 +877,8 @@ def update_pe_pb_xilv_to_ws(ws, target_col):
         except Exception:
             result = 0.0
         write_number_cell(ws, data["row"], target_col, result)
+        if data["rewrite_row"]:
+            write_number_cell(ws, data["rewrite_row"], target_col, point)
         print(f"{name} 估值结果: \n\t代码: {data['code']}\n\tpe百分位: {pe} pb百分位: {pb} 息率: {xilv}\n\t权重: {data['calc']}\n\t结果: {result}")
         time.sleep(1)
 
@@ -896,12 +902,8 @@ def export_realtime_data():
     update_pe_pb_xilv_to_ws(ws, target_col)
     set_column_style(ws, target_col)
 
-    for col in range(1, target_col + 1):
-        col_letter = openpyxl.utils.get_column_letter(col)
-        ws.column_dimensions[col_letter].width = 20
-
     wb.save(xlsx_path)
 
 if __name__ == "__main__":
     export_realtime_data()
-# End-907-2025.11.04.090007
+# End-909-2025.11.10.102210
