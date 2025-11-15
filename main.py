@@ -24,6 +24,8 @@ def set_column_style(ws, col_idx):
             cell.font = openpyxl.styles.Font(name="宋体", size=12)
             cell.alignment = openpyxl.styles.Alignment(horizontal="center", vertical="center")
     ws.cell(row=2, column=col_idx).font = openpyxl.styles.Font(name="宋体", size=12, bold=True)
+    for i in range(1, col_idx + 1):
+      ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = 15
 
 def safe_float_convert(val):
     try:
@@ -906,4 +908,4 @@ def export_realtime_data():
 
 if __name__ == "__main__":
     export_realtime_data()
-# End-909-2025.11.10.102210
+# End-911-2025.11.15.103433
